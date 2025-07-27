@@ -1,0 +1,54 @@
+<!DOCTYPE html5>
+<html lang="en-US">
+    <head>
+        {% load static %}
+        <meta charset="utf-8"> 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="icon" href="{% static 'favicon.ico' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+
+        {% block head %}{% endblock %}
+
+        <title>{% block title %}{% endblock %} | project_name v{{ project_version }}</title>
+    </head>
+    <body>
+        <nav>
+            <div class="flex-column flex-center gap-x-big">
+                {% if request.user.is_authenticated %}
+                    <a title="Click here to go to the homepage" href="{% url 'home' %}">
+                        <img width="100vw" height="100vh" src="{% static 'logo.png' %}" alt="project_name logo">
+                    </a>
+                    {% if request.user.is_staff %}
+                        <a title="Click here to go to the admin panel" 
+                            target="_blank"
+                            href="{% url 'admin:index' %}" 
+                            class="nav-button">
+                            Admin panel
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <img width="100vw" height="100vh" src="{% static 'logo.png' %}" alt="project_name logo">
+                {% endif %}
+            </div>
+                <div class="flex-column flex-center">
+                    {% if request.user.is_authenticated %}
+                        <form method="POST" action="{% url 'logout' %}" class="nav-button">
+                            {% csrf_token %}
+                            <button title="Click here to log out" 
+                                    type="submit">
+                                Log out
+                            </button>
+                        </form>
+                    {% endif %}
+                    <span title="project_name v{{ project_version }}" class="nav-element">
+                        Made with &heartsuit; by Author
+                    </span>
+                </div>
+        </nav>
+        <main>
+            {% block main %}
+            {% endblock %}
+        </main>
+    </body>
+</html>

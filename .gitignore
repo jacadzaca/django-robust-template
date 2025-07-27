@@ -1,0 +1,13 @@
+*vim
+*backup
+*sqlite3
+<<<<<<< Updated upstream
+=======
+.coverage
+.idea
+>>>>>>> Stashed changes
+
+venv/
+__pycache__/
+x_sent_emails/
+

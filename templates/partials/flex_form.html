@@ -1,0 +1,29 @@
+{% if form.non_field_errors %}
+    <figure>
+        <figcaption>Errors</figcaption>
+        <ul>
+            {% for error in form.non_field_errors %}
+                {% autoescape off %}
+                    <li>{{ error }}</li>
+                {% endautoescape %}
+            {% endfor %}
+        </ul>
+    </figure>
+{% endif %}
+
+{% for field in form %}
+    <div class="flex-column gap-small">
+        <label for="id_{{ field.name }}" class="flex-column gap-small">
+            <span>{{ field.label }}</span>
+        </label>
+        {% autoescape off %}
+            <small>
+                <i>{{ field.help_text }}</i>
+            </small>
+        {% endautoescape %}
+        <label id="{{ field.name }}_dynamic_error" for="id_{{ field.name }}" style="display: none" ></label>
+        {{ field.errors }}
+        {{ field }}
+    </div>
+{% endfor %}
+

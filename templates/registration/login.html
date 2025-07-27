@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Log in{% endblock%}
+
+{% block main %}
+    <div class="flex-column gap-small">
+        <h2>Log in</h2>
+        {% if form.non_field_errors %}
+            <ul>
+                {% for error in form.non_field_errors %}
+                    <li class="text-line-limit-small">{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <form method="POST" class="flex-column gap-medium">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="flex-column gap-small">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.help_text %}
+                        <i>{{ field.help_text }}</i>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button title="Click here to log in" type="submit">Log in</button>
+        </form>
+        <a title="Click here to reset your password" 
+            href="{% url 'password_reset' %}">
+            Can't remeber your password? Click here to reset it
+        </a>
+    </div>
+{% endblock %}
