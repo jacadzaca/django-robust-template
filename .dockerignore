@@ -1,0 +1,11 @@
+.git
+.env
+*vim
+*backup
+*sqlite3
+.gitignore
+
+venv/
+__pycache__/
+x_sent_emails/
+
