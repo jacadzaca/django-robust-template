@@ -59,6 +59,7 @@ FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -179,6 +180,15 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static/',
 ]
 STATIC_ROOT = os.environ.get('STATIC_ROOT', '/var/www/{{ project_name }}/static')
+
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/{{ docs_version }}/ref/settings/#default-auto-field
