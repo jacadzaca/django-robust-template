@@ -88,6 +88,43 @@ TEMPLATES = [
 
 WSGI_APPLICATION = '{{ project_name }}.wsgi.application'
 
+# Logging
+LOGGING: dict = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'default': {
+            'format': '%(levelname)-7s %(name)s %(asctime)s [%(module)s at line %(lineno)s] %(message)-5s',
+            'datefmt': '%Y-%m-%dT%H%M:%S',
+        },
+    },
+    'handlers': {
+        'console': {
+            'formatter': 'default',
+            'class': 'logging.StreamHandler',
+        },
+        'mail_admins': {
+            'include_html': True,
+            'class': 'django.utils.log.AdminEmailHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'level': 'INFO',
+            'propagate': True,
+            'handlers': ['console'],
+        },
+    },
+}
+
+if not DEBUG:
+    LOGGING['loggers']['django.request'] = {
+        'level': 'ERROR',
+        'propagate': True,
+        'handlers': ['mail_admins'],
+    }
+    LOGGING['loggers']['django']['handlers'].append('mail_admins')
+
 
 # Timezone
 TIME_ZONE = os.environ.get('TZ', 'UTC')
