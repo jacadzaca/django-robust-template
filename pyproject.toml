@@ -1,0 +1,14 @@
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "{{ project_name }}.settings"
+python_files = "test_*.py *_tests.py tests/*"
+log_level = "DEBUG"
+
+[tool.coverage.run]
+omit = [
+    "*/admin.py",
+    "*/manage.py",
+    "*/migrations/*",
+    "*/tests/*",
+    "conftest.py",
+]
+
