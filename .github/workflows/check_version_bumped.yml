@@ -1,0 +1,37 @@
+name: "Check whether version was bumped"
+
+on:
+  pull_request:
+    branches:
+      - "master"
+
+jobs:
+  check-version-bumped:
+    runs-on: "ubuntu-latest"
+    strategy:
+      matrix:
+        python-version: ["3.11"]
+    steps:
+      - name: "Checkout current ref"
+        uses: actions/checkout@v4
+      - name: "Get version on current ref"
+        run: |
+          echo "VERSION_ON_CURRENT_REF=$(grep -Poh --color=NEVER '\d\.\d\.\d' {{ project_name }}/__init__.py)" >> $GITHUB_ENV
+      - name: "Checkout master"
+        uses: "actions/checkout@v4"
+        with:
+          ref: "master"
+      - name: "Get version from master"
+        run: |
+          echo "VERSION_ON_MASTER=$(grep -Poh --color=NEVER '\d\.\d\.\d' {{ project_name }}/__init__.py)" >> $GITHUB_ENV
+      - name: "Check whether version bumped"
+        env:
+          VERSION_ON_CURRENT_REF: "${{ env.VERSION_ON_CURRENT_REF }}"
+          VERSION_ON_MASTER: "${{ env.VERSION_ON_MASTER }}"
+        if: "${{ env.VERSION_ON_CURRENT_REF  ==  env.VERSION_ON_MASTER }}"
+        run: |
+          echo "Version was not bumped"
+          echo "Current ref version: ${VERSION_ON_CURRENT_REF}"
+          echo "Master version: ${VERSION_ON_MASTER}"
+          exit 1
+
