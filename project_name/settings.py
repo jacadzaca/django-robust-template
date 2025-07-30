@@ -127,7 +127,7 @@ ADMINS = MANAGERS = [
 
 # Admin panel settings
 # https://django-jazzmin.readthedocs.io/configuration/
-from {{ project_name }}.__init__ import __version__
+from {{ project_name }} import __version__
 
 JAZZMIN_SETTINGS = {
     'site_log': 'logo.png',
