@@ -12,3 +12,19 @@ omit = [
     "conftest.py",
 ]
 
+[tool.mypy]
+plugins = [
+    "mypy_django_plugin.main",
+]
+exclude = [
+    'static/',
+    'templates/',
+    '.sh',
+    'admin\.py$',
+    'Dockerfile',
+]
+disable_error_code = "import-untyped"
+
+[tool.django-stubs]
+django_settings_module = "{{ project_name }}.settings"
+
