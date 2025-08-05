@@ -1,0 +1,32 @@
+name: "Check whether CHANGELOG was modified"
+
+on:
+  pull_request:
+    branches:
+      - "master"
+
+jobs:
+  changelog-checker:
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Checkout current ref"
+        uses: "actions/checkout@v4"
+      - name: "Get CHANGELOG checksum from current ref"
+        run: |
+          echo "CHANGELOG_CURRENT_REF=$(sha1sum CHANGELOG.md | cut -d ' ' -f1)" >> $GITHUB_ENV
+      - name: "Checkout master"
+        uses: "actions/checkout@v4"
+        with:
+          ref: "master"
+      - name: "Get CHANGELOG checksum from master"
+        run: |
+          echo "CHANGELOG_MASTER=$(sha1sum CHANGELOG.md | cut -d ' ' -f1)" >> $GITHUB_ENV
+      - name: "Check whether the checksum changed"
+        env:
+          CHANGELOG_CURRENT_REF: "${{ env.CHANGELOG_CURRENT_REF }}"
+          CHANGELOG_MASTER : "${{ env.CHANGELOG_MASTER }}"
+        if: "${{ env.CHANGELOG_CURRENT_REF ==  env.CHANGELOG_MASTER }}"
+        run: |
+          echo "No entry was added to the CHANGELOG. Please describe your changes"
+          exit 1
+
