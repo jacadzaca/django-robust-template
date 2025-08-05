@@ -12,7 +12,7 @@ from {{ project_name }}.views import (
 urlpatterns = [
     path('', home, name='home'),
     path('admin/', admin.site.urls),
-    path("accounts/", include("django.contrib.auth.urls")),
+    path('accounts/', include('users.urls')),
 ]
 
 handler401 = handle_error_401
