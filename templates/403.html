@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nie znaleziono strony{% endblock %}
+
+{% block main %}
+    <div class="flex-column flex-center gap-x-big">
+        <img title="403 error image" alt='403 error image' src="{% static '403.png' %}">
+        <b>403 - you're not allowed to see this page</b>
+    </div>
+{% endblock %}
+

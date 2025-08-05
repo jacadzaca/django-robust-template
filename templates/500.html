@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nie znaleziono strony{% endblock %}
+
+{% block main %}
+    <div class="flex-column flex-center gap-x-big">
+        <img title="500 error image" alt='500 error image' src="{% static '500.png' %}">
+        <b>500 - something went terribly wrong</b>
+    </div>
+{% endblock %}
+

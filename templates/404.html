@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nie znaleziono strony{% endblock %}
+
+{% block main %}
+    <div class="flex-column flex-center gap-x-big">
+        <img title="404 error image" alt='404 error image' src="{% static '404.png' %}">
+        <b>404 - the page you're looking for was not found</b>
+    </div>
+{% endblock %}
+

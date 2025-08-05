@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nie znaleziono strony{% endblock %}
+
+{% block main %}
+    <div class="flex-column flex-center gap-x-big">
+        <img title="401 error image" alt='401 error image' src="{% static '401.png' %}">
+        <b>401 - you're unauthorized to view this page. Please try logging in</b>
+    </div>
+{% endblock %}
+
