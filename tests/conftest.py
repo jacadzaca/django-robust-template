@@ -1,3 +1,3 @@
-import pytest
-from django.conf import settings
+import pytest # noqa: F401
+from django.conf import settings # noqa: F401
 

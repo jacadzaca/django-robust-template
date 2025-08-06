@@ -28,3 +28,27 @@ disable_error_code = "import-untyped"
 [tool.django-stubs]
 django_settings_module = "{{ project_name }}.settings"
 
+[tool.ruff]
+line-length = 100
+indent-width = 4
+exclude = [
+    ".git",
+    "venv",
+    ".venv",
+    ".idea"
+]
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["COM812"]
+ignore = []
+
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+
+docstring-code-format = true
+docstring-code-line-length = 100
+
