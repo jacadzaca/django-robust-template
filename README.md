@@ -34,6 +34,7 @@ python -m venv venv \
 django-admin startproject --template "https://github.com/jacadzaca/django-robust-template/archive/refs/heads/master.zip" --name "Dockerfile" --name "pyproject.toml"  --name "CHANGELOG.md" --exclude ".git" --name "README.md" "${PROJECT_NAME}" .
 
 sed -ie "s/{{ project_name }}/$PROJECT_NAME/g" .github/workflows/check_version_bumped.yml
+sed -ie "s/{{ project_name }}/$PROJECT_NAME/g" .github/workflows/check_enviroment_variables_included_in_readme.yml
 sed -ie "s/Your application's description/$PROJECT_DESCRIPTION/g" Dockerfile
 sed -ie "s/Your company/$COMPANY_NAME/g" Dockerfile
 sed -ie "s/your.email@example.com/$MAINTAINER_EMAIL/g" Dockerfile

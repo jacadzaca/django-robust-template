@@ -1,0 +1,32 @@
+name: "Check whether all environment specified in settings.py are present in README"
+
+on:
+  pull_request:
+    branches:
+      - "master"
+    paths:
+      - "README.md"
+      - "{{ project_name }}/settings.py"
+
+jobs:
+  environment-variables-checker:
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Checkout current ref"
+        uses: "actions/checkout@v4"
+      - name: "Check whether all environment specified in settings.py are present in README"
+        run: |
+          missingEnvironmentVariables=""
+
+          for environmentVariable in  $(grep -oP --color=NEVER "(?<=os\.environ\.get\(')\w+" project_name/settings.py)
+          do
+              # grep -o $environmentVariable README.md || missingEnvironmentVariables="${environmentVariable} "
+              grep -qo "$environmentVariable" README.md || missingEnvironmentVariables="${missingEnvironmentVariables} ${environmentVariable}"
+          done
+
+          if [ -n "$missingEnvironmentVariables" ]
+          then
+              echo "Missing variables:${missingEnvironmentVariables}"
+              exit 1
+          fi
+
