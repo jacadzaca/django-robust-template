@@ -14,6 +14,7 @@ This template includes:
  variables exposed
  - [Whitenoise](https://whitenoise.readthedocs.io/en/latest/) for django configured
  - sqlite configured such that the datestimes are stored in the correct timezone
+ - useful [django system checks](https://docs.djangoproject.com/en/5.2/topics/checks/)
 
 # Usage
 I believe that it's best to fork this repository and modify the template slightly
