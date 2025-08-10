@@ -2,6 +2,7 @@
 # based on: https://gist.github.com/hakib/e2e50d41d19a6984dc63bd94580c8647
 import ast
 import inspect
+from ast import ClassDef
 
 import django
 from django.core import checks
@@ -13,6 +14,13 @@ from django.db.models import (
     BooleanField,
     ManyToManyField,
 )
+
+
+def is_models_meta_assignment(node) -> bool:
+    return (
+        isinstance(node, ClassDef)
+        and node.name == 'Meta'
+    )
 
 
 def might_be_field_assignment(node) -> bool:
@@ -31,10 +39,14 @@ def might_be_field_assignment(node) -> bool:
 
 def check_model(model) -> list[Error]:
     problems = []
+    model_meta_node = None
 
     model_source = inspect.getsource(model)
     model_ast = ast.parse(model_source)
     for node in model_ast.body[0].body:
+        if is_models_meta_assignment(node):
+            model_meta_node = node
+
         if might_be_field_assignment(node):
             field_name = node.targets[0].id
             try:
@@ -198,6 +210,18 @@ def check_model(model) -> list[Error]:
                         id='django_robust_template.J010',
                     ),
                 )
+    if model_meta_node is None:
+        problems.append(
+            Error(
+                'Model has not explicitly defined Meta',
+                hint=(
+                    f'Explicitly define `Meta` on `{model.__module__}.{model.__name__}` '
+                    'See https://docs.djangoproject.com/en/{{ docs_version }}/topics/db/models/#meta-options'
+                ),
+                obj=model,
+                id='django_robust_template.J011',
+            ),
+        )
 
     return problems
 
