@@ -44,6 +44,7 @@ def check_model(model) -> list[Error]:
             is_verbose_name_defined = False
             is_null_explicitly_defined = False
             is_blank_explicitly_defined = False
+            is_max_length_explicitly_defined = False
             for argument in node.value.keywords:
                 if argument.arg == 'verbose_name':
                     is_verbose_name_defined = True
@@ -53,6 +54,8 @@ def check_model(model) -> list[Error]:
                     is_null_explicitly_defined = True
                 elif argument.arg == 'blank':
                     is_blank_explicitly_defined = True
+                elif argument.arg == 'max_length':
+                    is_max_length_explicitly_defined = True
 
             if not is_verbose_name_defined:
                 problems.append(
@@ -113,6 +116,19 @@ def check_model(model) -> list[Error]:
                         ),
                         obj=field,
                         id='django_robust_template.J004',
+                    ),
+                )
+            if (not is_max_length_explicitly_defined) and (isinstance(field, CharField)):
+                problems.append(
+                    Warning(
+                        'CharField dose not explicitly set the `max_length` argument',
+                        hint=(
+                            f'Consider setting `max_length` argument explicitly on `{model.__module__}.{model.__name__}.{field.name}`. '
+                            'Not setting it means that the value has unlimited length, which is controversial design. '
+                            'See https://docs.djangoproject.com/en/{{ docs_version }}/ref/models/fields/#django.db.models.CharField.max_length'
+                        ),
+                        obj=field,
+                        id='django_robust_template.J005',
                     ),
                 )
 
