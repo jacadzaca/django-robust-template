@@ -43,6 +43,7 @@ def check_model(model) -> list[Error]:
             is_db_comment_defined = False 
             is_verbose_name_defined = False
             is_null_explicitly_defined = False
+            is_blank_explicitly_defined = False
             for argument in node.value.keywords:
                 if argument.arg == 'verbose_name':
                     is_verbose_name_defined = True
@@ -50,6 +51,8 @@ def check_model(model) -> list[Error]:
                     is_db_comment_defined = True
                 elif argument.arg == 'null':
                     is_null_explicitly_defined = True
+                elif argument.arg == 'blank':
+                    is_blank_explicitly_defined = True
 
             if not is_verbose_name_defined:
                 problems.append(
@@ -97,6 +100,19 @@ def check_model(model) -> list[Error]:
                         ),
                         obj=field,
                         id='django_robust_template.J003',
+                    ),
+                )
+            if not is_blank_explicitly_defined:
+                problems.append(
+                    Error(
+                        'Field dose not explicitly set the `blank` argument',
+                        hint=(
+                            f'Set explicitly either `blank=False` or `blank=True` '
+                            f'on `{model.__module__}.{model.__name__}.{field.name}` '
+                            'See https://docs.djangoproject.com/en/{{ docs_version }}/ref/models/fields/#blank'
+                        ),
+                        obj=field,
+                        id='django_robust_template.J004',
                     ),
                 )
 
