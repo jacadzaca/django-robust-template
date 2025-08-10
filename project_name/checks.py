@@ -7,6 +7,9 @@ import django
 from django.core import checks
 from django.core.checks import Error
 from django.core.exceptions import FieldDoesNotExist
+from django.db.models import (
+    ManyToManyField,
+)
 
 
 def might_be_field_assignment(node) -> bool:
@@ -37,10 +40,13 @@ def check_model(model) -> list[Error]:
             except FieldDoesNotExist:
                 continue
 
+            is_db_comment_defined = False 
             is_verbose_name_defined = False
             for argument in node.value.keywords:
                 if argument.arg == 'verbose_name':
                     is_verbose_name_defined = True
+                elif argument.arg == 'db_comment':
+                    is_db_comment_defined = True
 
             if not is_verbose_name_defined:
                 problems.append(
@@ -48,7 +54,19 @@ def check_model(model) -> list[Error]:
                         'Field has no verbose name',
                         hint=f"Set verbose_name on `{model.__module__}.{model.__name__}.{field.name}`",
                         obj=field,
-                        id='J001',
+                        id='django_robust_template.J001',
+                    ),
+                )
+            if (not is_db_comment_defined) and (not isinstance(field, ManyToManyField)):
+                problems.append(
+                    Error(
+                        'Field has no database comment',
+                        hint=(
+                            f'Set `db_comment` on `{model.__module__}.{model.__name__}.{field.name}`'
+                            'See https://docs.djangoproject.com/en/{{ docs_version }}/ref/models/fields/#db-comment'
+                        ),
+                        obj=field,
+                        id='django_robust_template.J002',
                     ),
                 )
 
