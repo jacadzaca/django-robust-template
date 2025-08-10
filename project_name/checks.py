@@ -8,6 +8,8 @@ from django.core import checks
 from django.core.checks import Error, Warning
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models import (
+    CharField,
+    BooleanField,
     ManyToManyField,
 )
 
@@ -42,6 +44,7 @@ def check_model(model) -> list[Error]:
 
             is_db_comment_defined = False 
             is_verbose_name_defined = False
+            is_default_value_defined = False
             is_null_explicitly_defined = False
             is_blank_explicitly_defined = False
             is_max_length_explicitly_defined = False
@@ -56,6 +59,8 @@ def check_model(model) -> list[Error]:
                     is_blank_explicitly_defined = True
                 elif argument.arg == 'max_length':
                     is_max_length_explicitly_defined = True
+                elif argument.arg == 'default':
+                    is_default_value_defined = True
 
             if not is_verbose_name_defined:
                 problems.append(
@@ -129,6 +134,19 @@ def check_model(model) -> list[Error]:
                         ),
                         obj=field,
                         id='django_robust_template.J005',
+                    ),
+                )
+            if (not is_default_value_defined) and (isinstance(field, BooleanField)):
+                problems.append(
+                    Warning(
+                        'BooleanField does not explicitly set the `default` argument',
+                        hint=(
+                            f'Consider setting the either `default=False` or `default=True` explicitly on `{model.__module__}.{model.__name__}.{field.name}`. '
+                            'Not setting `default` on a BooleanField means that the field can contain NULL values, which *might* not '
+                            'make sense. See https://docs.djangoproject.com/en/{{ docs_version }}/ref/models/fields/#booleanfield'
+                        ),
+                        obj=field,
+                        id='django_robust_template.J007',
                     ),
                 )
 
