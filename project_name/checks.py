@@ -5,7 +5,7 @@ import inspect
 
 import django
 from django.core import checks
-from django.core.checks import Error
+from django.core.checks import Error, Warning
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models import (
     ManyToManyField,
@@ -69,6 +69,19 @@ def check_model(model) -> list[Error]:
                         id='django_robust_template.J002',
                     ),
                 )
+            elif is_db_comment_defined:
+                if not field.db_comment.isascii():
+                    problems.append(
+                        Warning(
+                            'Field has non-ascii `db_comment`',
+                            hint=(
+                                'Consider removing non-ascii (e.g. diacritics) from the db_comment. '
+                                'Some database backends (e.g. Oracle) can have problems with handling non-ascii comments.'
+                            ),
+                            obj=field,
+                            id='django_robust_template.J006'
+                        ),
+                    )
 
     return problems
 
