@@ -42,11 +42,14 @@ def check_model(model) -> list[Error]:
 
             is_db_comment_defined = False 
             is_verbose_name_defined = False
+            is_null_explicitly_defined = False
             for argument in node.value.keywords:
                 if argument.arg == 'verbose_name':
                     is_verbose_name_defined = True
                 elif argument.arg == 'db_comment':
                     is_db_comment_defined = True
+                elif argument.arg == 'null':
+                    is_null_explicitly_defined = True
 
             if not is_verbose_name_defined:
                 problems.append(
@@ -82,6 +85,20 @@ def check_model(model) -> list[Error]:
                             id='django_robust_template.J006'
                         ),
                     )
+            # `null` has no effect on ManyToManyField
+            if (not is_null_explicitly_defined) and (not isinstance(field, ManyToManyField)):
+                problems.append(
+                    Error(
+                        'Field does not explicitly set the `null` argument',
+                        hint=(
+                            f'Set explicitly either `null=False` or `null=True` '
+                            f'on `{model.__module__}.{model.__name__}.{field.name}`. '
+                            'See https://docs.djangoproject.com/en/{{ docs_version }}/ref/models/fields/#null'
+                        ),
+                        obj=field,
+                        id='django_robust_template.J003',
+                    ),
+                )
 
     return problems
 
