@@ -9,6 +9,7 @@ from django.core.checks import Error, Warning
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models import (
     CharField,
+    ForeignKey,
     BooleanField,
     ManyToManyField,
 )
@@ -49,6 +50,8 @@ def check_model(model) -> list[Error]:
             is_blank_explicitly_defined = False
             is_max_length_explicitly_defined = False
             is_default_database_value_defined = False
+            is_related_name_defined = False
+            is_related_query_name_defined = False
             for argument in node.value.keywords:
                 if argument.arg == 'verbose_name':
                     is_verbose_name_defined = True
@@ -64,6 +67,10 @@ def check_model(model) -> list[Error]:
                     is_default_value_defined = True
                 elif argument.arg == 'db_default':
                     is_default_database_value_defined = True
+                elif argument.arg == 'related_name':
+                    is_related_name_defined = True
+                elif argument.arg == 'related_query_name':
+                    is_related_query_name_defined  = True
 
             if not is_verbose_name_defined:
                 problems.append(
@@ -164,6 +171,32 @@ def check_model(model) -> list[Error]:
                         obj=field,
                         id='django_robust_template.J008',
                     )
+                )
+            if (not is_related_name_defined) and isinstance(field, (ForeignKey, ManyToManyField)):
+                problems.append(
+                    Error(
+                        'Field dose not explicitly define the `related_name` argument',
+                        hint=(
+                            f'Please set a value for the `related_name` of '
+                            f'`{model.__module__}.{model.__name__}.{field.name}`. '
+                            'See https://docs.djangoproject.com/en/{{ docs_version }}/ref/models/fields/#django.db.models.ForeignKey.related_name'
+                        ),
+                        obj=field,
+                        id='django_robust_template.J009',
+                    ),
+                )
+            if (not is_related_query_name_defined) and isinstance(field, (ForeignKey, ManyToManyField)):
+                problems.append(
+                    Error(
+                        'Field dose not explicitly define the `related_query_name` argument',
+                        hint=(
+                            f'Please set a value for the `related_query_name` of '
+                            f'`{model.__module__}.{model.__name__}.{field.name}`. See '
+                            'https://docs.djangoproject.com/en/{{ docs_version }}/ref/models/fields/#django.db.models.ForeignKey.related_query_name'
+                        ),
+                        obj=field,
+                        id='django_robust_template.J010',
+                    ),
                 )
 
     return problems
