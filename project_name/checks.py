@@ -48,6 +48,7 @@ def check_model(model) -> list[Error]:
             is_null_explicitly_defined = False
             is_blank_explicitly_defined = False
             is_max_length_explicitly_defined = False
+            is_default_database_value_defined = False
             for argument in node.value.keywords:
                 if argument.arg == 'verbose_name':
                     is_verbose_name_defined = True
@@ -61,6 +62,8 @@ def check_model(model) -> list[Error]:
                     is_max_length_explicitly_defined = True
                 elif argument.arg == 'default':
                     is_default_value_defined = True
+                elif argument.arg == 'db_default':
+                    is_default_database_value_defined = True
 
             if not is_verbose_name_defined:
                 problems.append(
@@ -148,6 +151,19 @@ def check_model(model) -> list[Error]:
                         obj=field,
                         id='django_robust_template.J007',
                     ),
+                )
+            if is_default_value_defined and (not is_default_database_value_defined):
+                problems.append(
+                    Warning(
+                        'Field dose define a default value but no `db_default` value',
+                        hint=(
+                            f'Consider setting both the default value and the `db_default` value on `{model.__module__}.{model.__name__}.{field.name}`. '
+                            'Direct inserts on the database level can leave the field NULL, which might break the expectations to which the data '
+                            'should conform to when accessing it. See https://docs.djangoproject.com/en/{{ docs_version }}/ref/models/fields/#db-default'
+                        ),
+                        obj=field,
+                        id='django_robust_template.J008',
+                    )
                 )
 
     return problems
