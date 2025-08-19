@@ -257,6 +257,22 @@ def check_model(model) -> list[Error]:
                     ),
                 )
 
+    try:
+        model._meta.get_field('last_modified_at')
+    except FieldDoesNotExist:
+        problems.append(
+            Warning(
+                'Model dose not have a `last_modified_at` field',
+                hint=(
+                    f'Consider adding a `last_modified_at` DateTimeField to `{model.__module__}.{model.__name__}` '
+                    'with `auto_now=True` to simplify/enable auditing/troubleshooting. '
+                    'See https://docs.djangoproject.com/en/{{ docs_version }}/ref/models/fields/#django.db.models.DateField.auto_now'
+                ),
+                obj=model,
+                id='django_robust_template.J021',
+            ),
+        )
+
     if model_meta_node is None:
         problems.append(
             Error(
