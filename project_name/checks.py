@@ -257,6 +257,7 @@ def check_model(model) -> list[Error]:
     else:
         is_models_verbose_name_defined = False
         is_models_verbose_name_plural_defined = False
+        is_models_db_comment_defined = False
         for node in ast.iter_child_nodes(model_meta_node):
             if might_be_field_assignment(node):
                 field_name = node.targets[0].id
@@ -264,6 +265,8 @@ def check_model(model) -> list[Error]:
                     is_models_verbose_name_defined = True
                 elif field_name == 'verbose_name_plural':
                     is_models_verbose_name_plural_defined = True
+                elif field_name == 'db_table_comment':
+                    is_models_db_comment_defined = True
         if not is_models_verbose_name_defined:
             problems.append(
                 Error(
@@ -287,6 +290,31 @@ def check_model(model) -> list[Error]:
                     obj=model,
                     id='django_robust_template.J015',
                 )
+            )
+
+        if not is_models_db_comment_defined:
+            problems.append(
+                Error(
+                    'Model does not explicitly define `db_table_comment`',
+                    hint=(
+                        f'Explicitly define `Meta.db_table_comment` on `{model.__module__}.{model.__name__}`'
+                        'See https://docs.djangoproject.com/en/{{ docs_version }}/ref/models/options/#db-table-comment'
+                    ),
+                    obj=model,
+                    id='django_robust_template.J016',
+                )
+            )
+        elif not model._meta.db_table_comment.isascii():
+            problems.append(
+                Warning(
+                    'Model has non-ascii `db_table_comment`',
+                    hint=(
+                        'Consider removing non-ascii (e.g. diacritics) from the `db_table_comment`. '
+                        'Some database backends (e.g. Oracle) can have problems with handling non-ascii comments.'
+                    ),
+                    obj=model,
+                    id='django_robust_template.J017',
+                ),
             )
 
     return problems
