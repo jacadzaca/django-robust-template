@@ -287,6 +287,19 @@ def check_model(model) -> list[Error]:
             ),
         )
 
+    if model.__repr__ is Model.__repr__:
+        problems.append(
+            Warning(
+                'Model does not explicitly define a `__repr__` method',
+                hint=(
+                    f'Consider adding a `__repr__` method to `{model.__module__}.{model.__name__}` '
+                    'to improve debbugability/log readability'
+                ),
+                obj=model,
+                id='django_robust_template.J023',
+            )
+        )
+
     if model_meta_node is None:
         problems.append(
             Error(
