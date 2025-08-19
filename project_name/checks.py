@@ -254,6 +254,25 @@ def check_model(model) -> list[Error]:
                 id='django_robust_template.J011',
             ),
         )
+    else:
+        is_models_verbose_name_defined = False
+        for node in ast.iter_child_nodes(model_meta_node):
+            if might_be_field_assignment(node):
+                field_name = node.targets[0].id
+                if field_name == 'verbose_name':
+                    is_models_verbose_name_defined = True
+        if not is_models_verbose_name_defined:
+            problems.append(
+                Error(
+                    'Model dose not explicitly define `verbose_name`',
+                    hint=(
+                        f'Explicitly define `Meta.verbose_name` on `{model.__module__}.{model.__name__}`'
+                        'See https://docs.djangoproject.com/en/{{ docs_version }}/ref/settings/'
+                    ),
+                    obj=model,
+                    id='django_robust_template.J014',
+                )
+            )
 
     return problems
 
