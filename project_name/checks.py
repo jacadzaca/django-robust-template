@@ -258,6 +258,7 @@ def check_model(model) -> list[Error]:
         is_models_verbose_name_defined = False
         is_models_verbose_name_plural_defined = False
         is_models_db_comment_defined = False
+        is_models_db_table_defined = False
         for node in ast.iter_child_nodes(model_meta_node):
             if might_be_field_assignment(node):
                 field_name = node.targets[0].id
@@ -267,6 +268,8 @@ def check_model(model) -> list[Error]:
                     is_models_verbose_name_plural_defined = True
                 elif field_name == 'db_table_comment':
                     is_models_db_comment_defined = True
+                elif field_name == 'db_table':
+                    is_models_db_table_defined = True
         if not is_models_verbose_name_defined:
             problems.append(
                 Error(
@@ -314,6 +317,19 @@ def check_model(model) -> list[Error]:
                     ),
                     obj=model,
                     id='django_robust_template.J017',
+                ),
+            )
+
+        if not is_models_db_table_defined:
+            problems.append(
+                Error(
+                    'Model does not explicitly define `db_table',
+                    hint=(
+                        f'Explicitly define `Meta.db_table` on `{model.__module__}.{model.__name__}`'
+                        'See https://docs.djangoproject.com/en/{{ docs_version }}/ref/models/options/#db-table'
+                    ),
+                    obj=model,
+                    id='django_robust_template.J018',
                 ),
             )
 
