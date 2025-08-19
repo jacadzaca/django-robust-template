@@ -259,7 +259,9 @@ def check_model(model) -> list[Error]:
                 )
 
     try:
-        model._meta.get_field('last_modified_at')
+        # the field on the AbstractUser is named differently
+        if model.__name__ != '{{ camel_case_project_name }}User':
+            model._meta.get_field('last_modified_at')
     except FieldDoesNotExist:
         problems.append(
             Warning(
