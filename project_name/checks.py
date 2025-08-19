@@ -65,6 +65,7 @@ def check_model(model) -> list[Error]:
             is_related_name_defined = False
             is_related_query_name_defined = False
             is_help_text_defined = False
+            is_editable_explicitly_defined = False
             for argument in node.value.keywords:
                 if argument.arg == 'verbose_name':
                     is_verbose_name_defined = True
@@ -86,6 +87,8 @@ def check_model(model) -> list[Error]:
                     is_related_query_name_defined  = True
                 elif argument.arg == 'help_text':
                     is_help_text_defined = True
+                elif argument.arg == 'editable':
+                    is_editable_explicitly_defined = True
 
             if not is_verbose_name_defined:
                 problems.append(
@@ -225,6 +228,20 @@ def check_model(model) -> list[Error]:
                         id='django_robust_template.J012',
                     )
                 )
+            if not is_editable_explicitly_defined:
+                problems.append(
+                    Error(
+                        f'{field.__class__.__name__} dose not explicitly define the `editable` argument',
+                        hint=(
+                            f'Please set either `True` or `False` for the argument `editable` '
+                            f'of `{model.__module__}.{model.__name__}.{field.name}`. '
+                            'See https://docs.djangoproject.com/en/{{ docs_version }}/ref/models/fields/#editable'
+                        ),
+                        obj=field,
+                        id='django_robust_template.J013',
+                    )
+                )
+
     if model_meta_node is None:
         problems.append(
             Error(
