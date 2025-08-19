@@ -9,6 +9,7 @@ from django.core import checks
 from django.core.checks import Error, Warning
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models import (
+    Model,
     CharField,
     ForeignKey,
     BooleanField,
@@ -270,6 +271,19 @@ def check_model(model) -> list[Error]:
                 ),
                 obj=model,
                 id='django_robust_template.J021',
+            ),
+        )
+
+    if model.__str__ is Model.__str__:
+        problems.append(
+            Warning(
+                'Model dose not explicitly define a `__str__` method',
+                hint=(
+                    f'Consider adding a `__str__` method to `{model.__module__}.{model.__name__}` '
+                    'to ensure pretty displaying. See https://docs.djangoproject.com/en/{{ docs_version }}/ref/models/instances/#str '
+                ),
+                obj=model,
+                id='django_robust_template.J022',
             ),
         )
 
