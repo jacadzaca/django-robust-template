@@ -300,6 +300,21 @@ def check_model(model) -> list[Error]:
             )
         )
 
+    try:
+        model.get_absolute_url
+    except AttributeError:
+        problems.append(
+            Warning(
+                'Model dose not implement `get_absolute_url` method',
+                hint=(
+                    f'Consider adding a `get_absolute_url` method to `{model.__module__}.{model.__name__}` '
+                    'to improve interoperability with django. See https://docs.djangoproject.com/en/{{ docs_version }}/ref/models/instances/#get-absolute-url'
+                ),
+                obj=model,
+                id='django_robust_template.J024',
+            ),
+        )
+
     if model_meta_node is None:
         problems.append(
             Error(
