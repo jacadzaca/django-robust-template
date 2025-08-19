@@ -64,6 +64,7 @@ def check_model(model) -> list[Error]:
             is_default_database_value_defined = False
             is_related_name_defined = False
             is_related_query_name_defined = False
+            is_help_text_defined = False
             for argument in node.value.keywords:
                 if argument.arg == 'verbose_name':
                     is_verbose_name_defined = True
@@ -83,6 +84,8 @@ def check_model(model) -> list[Error]:
                     is_related_name_defined = True
                 elif argument.arg == 'related_query_name':
                     is_related_query_name_defined  = True
+                elif argument.arg == 'help_text':
+                    is_help_text_defined = True
 
             if not is_verbose_name_defined:
                 problems.append(
@@ -209,6 +212,18 @@ def check_model(model) -> list[Error]:
                         obj=field,
                         id='django_robust_template.J010',
                     ),
+                )
+            if not is_help_text_defined:
+                problems.append(
+                    Error(
+                        f'{field.__class__.__name__} field has no help_text',
+                        hint=(
+                            f'Set `help_text` attribute on `{model.__module__}.{model.__name__}.{field.name}` '
+                            'See https://docs.djangoproject.com/en/{{ docs_version }}/ref/models/fields/#help-text'
+                        ),
+                        obj=field,
+                        id='django_robust_template.J012',
+                    )
                 )
     if model_meta_node is None:
         problems.append(
