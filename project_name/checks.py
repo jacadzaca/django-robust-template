@@ -66,6 +66,7 @@ def check_model(model) -> list[Error]:
             is_related_query_name_defined = False
             is_help_text_defined = False
             is_editable_explicitly_defined = False
+            is_db_table_explicitly_defined = False
             for argument in node.value.keywords:
                 if argument.arg == 'verbose_name':
                     is_verbose_name_defined = True
@@ -89,6 +90,8 @@ def check_model(model) -> list[Error]:
                     is_help_text_defined = True
                 elif argument.arg == 'editable':
                     is_editable_explicitly_defined = True
+                elif argument.arg == 'db_table':
+                    is_db_table_explicitly_defined = True
 
             if not is_verbose_name_defined:
                 problems.append(
@@ -240,6 +243,18 @@ def check_model(model) -> list[Error]:
                         obj=field,
                         id='django_robust_template.J013',
                     )
+                )
+            if not is_db_table_explicitly_defined and isinstance(field, ManyToManyField):
+                problems.append(
+                    Error(
+                        f'Field does not explicitly define the `db_table` argument.',
+                        hint=(
+                            f'Set `db_table` attribute on `{model.__module__}.{model.__name__}.{field.name}` '
+                            'See https://docs.djangoproject.com/en/{{ docs_version }}/ref/models/fields/#django.db.models.ManyToManyField.db_table'
+                        ),
+                        obj=field,
+                        id='django_robust_template.J019',
+                    ),
                 )
 
     if model_meta_node is None:
