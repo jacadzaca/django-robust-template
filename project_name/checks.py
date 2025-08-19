@@ -256,21 +256,36 @@ def check_model(model) -> list[Error]:
         )
     else:
         is_models_verbose_name_defined = False
+        is_models_verbose_name_plural_defined = False
         for node in ast.iter_child_nodes(model_meta_node):
             if might_be_field_assignment(node):
                 field_name = node.targets[0].id
                 if field_name == 'verbose_name':
                     is_models_verbose_name_defined = True
+                elif field_name == 'verbose_name_plural':
+                    is_models_verbose_name_plural_defined = True
         if not is_models_verbose_name_defined:
             problems.append(
                 Error(
                     'Model dose not explicitly define `verbose_name`',
                     hint=(
                         f'Explicitly define `Meta.verbose_name` on `{model.__module__}.{model.__name__}`'
-                        'See https://docs.djangoproject.com/en/{{ docs_version }}/ref/settings/'
+                        'See https://docs.djangoproject.com/en/{{ docs_version }}/ref/models/options/#verbose-name'
                     ),
                     obj=model,
                     id='django_robust_template.J014',
+                )
+            )
+        if not is_models_verbose_name_plural_defined:
+            problems.append(
+                Error(
+                    'Model does not explicitly define `verbose_name_plural`',
+                    hint=(
+                        f'Explicitly define `Meta.verbose_name` on `{model.__module__}.{model.__name__}`'
+                        'See https://docs.djangoproject.com/en/{{ docs_version }}/ref/models/options/#verbose-name-plural'
+                    ),
+                    obj=model,
+                    id='django_robust_template.J015',
                 )
             )
 
