@@ -222,7 +222,7 @@ def check_model(model) -> list[Error]:
                 )
             if not is_help_text_defined:
                 problems.append(
-                    Error(
+                    Warning(
                         f'{field.__class__.__name__} field has no help_text',
                         hint=(
                             f'Set `help_text` attribute on `{model.__module__}.{model.__name__}.{field.name}` '

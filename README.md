@@ -120,8 +120,8 @@ django-admin startproject --template "https://github.com/jacadzaca/django-robust
  explicitly specify the `related_query_name` argument. This is since [explicit is better than implicit](https://peps.python.org/pep-0020/)
  - `django_robust_template.J011` - emits an error if a first-party model has no explicitly defiend `Meta`. This is
  since [explicit is better than implicit](https://peps.python.org/pep-0020/)
- - `django_robust_template.J012` - emits an error if a first-party model's field dose not specify `help_text` argument.
- This is since I belive that most form fields become easier to understand with `help_text`.
+ - `django_robust_template.J012` - emits a warning if a first-party model's field dose not specify `help_text`
+ argument. This is since I belive that most form fields become easier to understand with `help_text`.
  - `django_robust_template.J013` - emits an error if a first-party model has no explicitly specified `editable` argument.
  This is since by default, `editable=True` and [explicit is better than implicit](https://peps.python.org/pep-0020/).
  - `django_robust_template.J014` - emits an error if a first-party model dose not explicitly specify `verbose_name` in
